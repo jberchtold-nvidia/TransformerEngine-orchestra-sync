@@ -69,8 +69,51 @@ def test_report_shape_is_stable():
         "device",
         "config",
         "metrics",
+        "measurements",
         "environment",
     }
+    assert report["measurements"] == [
+        {
+            "case_id": "pytorch_linear_forward_smoke",
+            "metric": "latency_ms_mean",
+            "value": 1.0,
+            "unit": "ms",
+            "iteration": 0,
+            "higher_is_better": False,
+        },
+        {
+            "case_id": "pytorch_linear_forward_smoke",
+            "metric": "latency_ms_median",
+            "value": 1.0,
+            "unit": "ms",
+            "iteration": 0,
+            "higher_is_better": False,
+        },
+        {
+            "case_id": "pytorch_linear_forward_smoke",
+            "metric": "latency_ms_min",
+            "value": 1.0,
+            "unit": "ms",
+            "iteration": 0,
+            "higher_is_better": False,
+        },
+        {
+            "case_id": "pytorch_linear_forward_smoke",
+            "metric": "latency_ms_max",
+            "value": 1.0,
+            "unit": "ms",
+            "iteration": 0,
+            "higher_is_better": False,
+        },
+        {
+            "case_id": "pytorch_linear_forward_smoke",
+            "metric": "samples_per_second",
+            "value": 32000.0,
+            "unit": "samples/s",
+            "iteration": 0,
+            "higher_is_better": True,
+        },
+    ]
 
 
 def test_write_report_creates_machine_readable_json(tmp_path):

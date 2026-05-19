@@ -10,8 +10,10 @@ python3 benchmarks/smoke_benchmark.py --output /tmp/te-smoke-benchmark.json --wa
 
 The benchmark runs a small PyTorch `transformer_engine.pytorch.Linear` forward pass on CUDA
 with bfloat16 inputs and writes a report with schema version `te_benchmark_smoke/v1`.
-Benchmark acceptance requires `status` to be `passed` and the latency and throughput metrics
-to be finite positive numbers.
+The report includes both a `metrics` object and a top-level `measurements` array with
+`case_id`, `metric`, `value`, `unit`, `iteration`, and `higher_is_better` fields for
+benchmark automation. Benchmark acceptance requires `status` to be `passed` and the latency
+and throughput metrics to be finite positive numbers.
 
 For Nsight capture, use the same benchmark with profiler collection enabled after warmup:
 

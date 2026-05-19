@@ -18,6 +18,13 @@ from typing import Any
 
 SCHEMA_VERSION = "te_benchmark_smoke/v1"
 BENCHMARK_NAME = "pytorch_linear_forward_smoke"
+MEASUREMENT_UNITS = {
+    "latency_ms_mean": "ms",
+    "latency_ms_median": "ms",
+    "latency_ms_min": "ms",
+    "latency_ms_max": "ms",
+    "samples_per_second": "samples/s",
+}
 
 
 class BenchmarkSkipped(RuntimeError):
@@ -150,18 +157,39 @@ def make_report(
     environment: dict[str, str] | None = None,
     reason: str | None = None,
 ) -> dict[str, Any]:
+    metrics = metrics or {}
     report = {
         "schema_version": SCHEMA_VERSION,
         "benchmark": BENCHMARK_NAME,
         "status": status,
         "device": device or {},
         "config": config,
-        "metrics": metrics or {},
+        "metrics": metrics,
+        "measurements": measurements_from_metrics(metrics),
         "environment": environment or collect_environment(),
     }
     if reason is not None:
         report["reason"] = reason
     return report
+
+
+def measurements_from_metrics(metrics: dict[str, Any]) -> list[dict[str, Any]]:
+    measurements = []
+    for metric, unit in MEASUREMENT_UNITS.items():
+        value = metrics.get(metric)
+        if value is None:
+            continue
+        measurements.append(
+            {
+                "case_id": BENCHMARK_NAME,
+                "metric": metric,
+                "value": value,
+                "unit": unit,
+                "iteration": 0,
+                "higher_is_better": metric == "samples_per_second",
+            }
+        )
+    return measurements
 
 
 def requested_device_info(device: str) -> dict[str, str]:
