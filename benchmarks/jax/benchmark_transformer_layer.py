@@ -106,38 +106,6 @@ def validate_args(args: argparse.Namespace) -> None:
 
 def dtype_from_name(jnp: Any, dtype_name: str) -> Any:
     """Map CLI dtype names to JAX dtypes."""
-    measurements = [
-        {
-            "case_id": args.case_id,
-            "metric": "latency_ms",
-            "value": sample_ms,
-            "unit": "ms",
-            "iteration": index,
-            "higher_is_better": False,
-        }
-        for index, sample_ms in enumerate(iterations_ms)
-    ]
-    measurements.extend(
-        [
-            {
-                "case_id": args.case_id,
-                "metric": "latency_ms_mean",
-                "value": summary["mean"],
-                "unit": "ms",
-                "iteration": len(iterations_ms),
-                "higher_is_better": False,
-            },
-            {
-                "case_id": args.case_id,
-                "metric": "tokens_per_second",
-                "value": tokens_per_second,
-                "unit": "tokens/s",
-                "iteration": len(iterations_ms),
-                "higher_is_better": True,
-            },
-        ]
-    )
-
     return {
         "bfloat16": jnp.bfloat16,
         "float16": jnp.float16,
@@ -250,6 +218,37 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, Any]:
     tokens_per_iteration = args.batch_size * args.seq_len
     tokens_per_second = tokens_per_iteration / (summary["mean"] / 1000.0)
     device = jax.devices()[0]
+    measurements = [
+        {
+            "case_id": args.case_id,
+            "metric": "latency_ms",
+            "value": sample_ms,
+            "unit": "ms",
+            "iteration": index,
+            "higher_is_better": False,
+        }
+        for index, sample_ms in enumerate(iterations_ms)
+    ]
+    measurements.extend(
+        [
+            {
+                "case_id": args.case_id,
+                "metric": "latency_ms_mean",
+                "value": summary["mean"],
+                "unit": "ms",
+                "iteration": len(iterations_ms),
+                "higher_is_better": False,
+            },
+            {
+                "case_id": args.case_id,
+                "metric": "tokens_per_second",
+                "value": tokens_per_second,
+                "unit": "tokens/s",
+                "iteration": len(iterations_ms),
+                "higher_is_better": True,
+            },
+        ]
+    )
 
     return {
         "schema_version": SCHEMA_VERSION,
